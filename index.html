@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f7fb">
+  <title> جدول مذاكرتي</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="StudyFlow الرئيسية">
+        <span class="brand-mark">S</span>
+        <span><strong>StudyFlow</strong><small>خطوة كل يوم</small></span>
+      </a>
+      <div class="header-actions">
+        <button id="themeToggle" class="icon-button" type="button" aria-label="تغيير المظهر" title="تغيير المظهر">☾</button>
+        <button id="manageSubjectsBtn" class="button button-soft" type="button">إدارة المواد</button>
+        <button id="addTaskBtn" class="button button-primary" type="button">＋ <span>مهمة جديدة</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="welcome-row">
+        <div>
+          <p class="eyebrow">ذاكر! محدش هينفعك</p>
+          <h1>جدول الناس الدحيحه العالمي 
+            <span>للمذاكره</span></h1>
+          <p class="muted">رتب المهام واشطب عالكلام يقلبي انت مش صغير</p>
+        </div>
+        <div class="week-picker">
+          <button id="prevWeek" class="icon-button" type="button" aria-label="الأسبوع السابق">‹</button>
+          <div><strong id="weekRange">هذا الأسبوع</strong><small>السبت — الجمعة</small></div>
+          <button id="nextWeek" class="icon-button" type="button" aria-label="الأسبوع التالي">›</button>
+        </div>
+      </section>
+
+      <section class="stats-grid" aria-label="ملخص التقدم">
+        <article class="stat-card">
+          <div class="stat-icon blue">✓</div>
+          <div><span class="stat-label">إنجاز الأسبوع</span><strong id="progressText">0%</strong><small id="progressDetail">0 من 0 مهام مكتملة</small></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-icon green">◎</div>
+          <div><span class="stat-label">المهام المتبقية</span><strong id="remainingCount">0</strong><small>مهام لسه محتاجة تخلصها</small></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-icon purple">✦</div>
+          <div><span class="stat-label">إنجاز اليوم</span><strong id="todayProgress">0%</strong><small id="todayDetail">0 من 0 مهام</small></div>
+        </article>
+      </section>
+
+      <section class="progress-panel">
+        <div class="progress-heading"><strong>تقدم الأسبوع</strong><span id="progressPercent">0%</span></div>
+        <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+      </section>
+
+      <section class="planner-section">
+        <div class="section-heading">
+          <div><h2>جدول الأسبوع</h2><p class="muted">دوس على المهمة لتعديلها، أو استخدم زر «تم» لإنهائها.</p></div>
+          <label class="filter-label">عرض
+            <select id="subjectFilter" aria-label="فلترة حسب المادة"><option value="all">كل المواد والمهام</option></select>
+          </label>
+        </div>
+        <nav id="mobileDayTabs" class="day-tabs" aria-label="اختيار اليوم"></nav>
+        <div id="weekGrid" class="week-grid"></div>
+        <div id="emptyWeek" class="empty-state hidden">
+          <div class="empty-illustration">✎</div>
+          <h3>أسبوعك لسه فاضي</h3>
+          <p>ابدأ بإضافة أول مهمة مذاكرة، وبعدها تابع إنجازك هنا.</p>
+          <button class="button button-primary" id="emptyAddBtn" type="button">＋ إضافة أول مهمة</button>
+        </div>
+      </section>
+
+      <section class="subjects-section">
+        <div class="section-heading"><div><h2>المواد والألوان</h2><p class="muted">كل مادة لها لون يسهّل تمييزها في الجدول.</p></div></div>
+        <div id="subjectLegend" class="subject-legend"></div>
+      </section>
+      <footer><span>صُنع لمذاكرة أهدى ✦</span><span>بياناتك محفوظة على جهازك تلقائيًا</span>
+       <span>created by dedo</span></footer>
+    </main>
+  </div>
+
+  <!-- نافذة إضافة/تعديل مهمة -->
+  <dialog id="taskDialog" class="dialog">
+    <form id="taskForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">تنظيم المهام</p><h2 id="taskDialogTitle">إضافة مهمة جديدة</h2></div><button class="icon-button" type="button" data-close="taskDialog" aria-label="إغلاق">×</button></div>
+      <input id="taskId" type="hidden">
+      <label>اسم المهمة <span class="required">*</span><input id="taskTitle" type="text" maxlength="90" placeholder="مثال: حل أسئلة الدرس الأول" required></label>
+      <div class="form-row">
+        <label>المادة
+          <select id="taskSubject"></select>
+        </label>
+        <label>اليوم
+          <select id="taskDay"></select>
+        </label>
+      </div>
+      <label>تفاصيل أو ملاحظة <span class="optional">(اختياري)</span><textarea id="taskNote" rows="3" maxlength="240" placeholder="اكتب ملاحظة قصيرة لو محتاج..."></textarea></label>
+      <p id="taskError" class="form-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button id="deleteTaskBtn" class="button button-danger hidden" type="button">حذف المهمة</button>
+        <span class="spacer"></span>
+        <button class="button button-soft" type="button" data-close="taskDialog">إلغاء</button>
+        <button class="button button-primary" type="submit">حفظ المهمة</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- إدارة المواد -->
+  <dialog id="subjectsDialog" class="dialog">
+    <form id="subjectForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">تخصيص جدولك</p><h2>إدارة المواد</h2></div><button class="icon-button" type="button" data-close="subjectsDialog" aria-label="إغلاق">×</button></div>
+      <p class="muted compact">أضف مادة أو غيّر اسمها ولونها. تقدر تختار «مهمة عامة» للمهام اللي مش مرتبطة بمادة.</p>
+      <div id="subjectManagerList" class="subject-manager-list"></div>
+      <div class="add-subject-row">
+        <label class="grow">اسم المادة<input id="newSubjectName" type="text" maxlength="40" placeholder="مثال: الأحياء"></label>
+        <label class="color-field">اللون<input id="newSubjectColor" type="color" value="#3b82f6" aria-label="لون المادة الجديدة"></label>
+        <button id="addSubjectBtn" class="button button-primary" type="button">إضافة</button>
+      </div>
+      <p id="subjectError" class="form-error" role="alert"></p>
+      <div class="dialog-actions"><span class="spacer"></span><button class="button button-soft" type="button" data-close="subjectsDialog">إغلاق</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
