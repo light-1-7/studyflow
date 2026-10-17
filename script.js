@@ -24,6 +24,7 @@ const DEFAULT_SUBJECTS = [
 
 const STORAGE_KEY = "studyflow-data-v1";
 const THEME_KEY = "studyflow-theme";
+const WEEK_KEY = "studyflow-current-week";
 const $ = (selector) => document.querySelector(selector);
 
 let subjects = [];
@@ -73,6 +74,35 @@ function loadData() {
 
 function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ subjects, tasks }));
+}
+
+function resetProgressForNewWeek() {
+  const weekStart = getWeekStart();
+
+  // Build a local date key for the Saturday starting this week.
+  const currentWeekKey = [
+    weekStart.getFullYear(),
+    String(weekStart.getMonth() + 1).padStart(2, "0"),
+    String(weekStart.getDate()).padStart(2, "0")
+  ].join("-");
+
+  const savedWeekKey = localStorage.getItem(WEEK_KEY);
+
+  // First run: save the week without changing existing progress.
+  if (!savedWeekKey) {
+    localStorage.setItem(WEEK_KEY, currentWeekKey);
+    return;
+  }
+
+  // Reset completion only when a real new week starts.
+  if (savedWeekKey !== currentWeekKey) {
+    tasks.forEach((task) => {
+      task.done = false;
+    });
+
+    localStorage.setItem(WEEK_KEY, currentWeekKey);
+    saveData();
+  }
 }
 
 function getSubject(subjectId) {
@@ -537,6 +567,7 @@ function bindEvents() {
 
 function startApp() {
   loadData();
+   resetProgressForNewWeek();
   bindEvents();
   initializeTheme();
   renderAll();
